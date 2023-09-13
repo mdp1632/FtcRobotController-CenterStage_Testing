@@ -1,0 +1,20 @@
+Motor Ports                    Configuration Names
+    0   RF Motor                rf_drive
+    1
+    2
+    3
+
+Servo Ports
+    0
+    1
+    2
+    3
+    4
+    5
+
+I2C Ports
+    Bus 1
+    Bus 2
+    Bus 3
+
+
