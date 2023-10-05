@@ -32,10 +32,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
@@ -140,12 +137,8 @@ public class ParentOpMode extends LinearOpMode {
             // This function will be be overridden by child opmode classes
 
 
-            //include emergency stop check in all runOpMode() functions/methods
-            //implementation depends on which E-stop function will be used (boolean/void)
-            if(emergencyStopped()){
-                //terminateOpModeNow();   // New method in 2022. (Immediately, Cleanly exits OpMode)
-                break;
-            }
+          checkEmergencyStop();
+
 
             //checkEmergencyStop(); // Stops motors and Terminates if buttons are pressed
             //without additional code in the while(opModeIsActive) loop.
@@ -164,13 +157,13 @@ public class ParentOpMode extends LinearOpMode {
         return gamepad1.left_stick_x;
     }
     public double left_sticky_y(){
-        return gamepad1.left_stick_y;
+        return -gamepad1.left_stick_y;
     }
     public double right_sticky_x(){
         return gamepad1.right_stick_x;
     }
     public double right_sticky_y(){
-        return gamepad1.right_stick_y;
+        return -gamepad1.right_stick_y;
     }
 
 
@@ -182,13 +175,16 @@ public class ParentOpMode extends LinearOpMode {
        if(gamepad1.b == true && gamepad1.y == true){
            return true;
        }
+       else{
+           return false;
+       }
 
 
     }
 
 
 
-    public boolean pushButton(){
+    public boolean PaperAirplaneButton(){
         return gamepad1.x;
     }
 
@@ -209,19 +205,11 @@ public class ParentOpMode extends LinearOpMode {
     // If using boolean version, call to function will need to be
     // placed in conditional (if/then) statement with code to break from loop or terminate opmode.
 
-    public boolean emergencyStopped(){
-        if (emergencyButtons()) {
-            //stop all motors, servos, etc.
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
+
 
     public void checkEmergencyStop(){
         if(emergencyButtons()){
-            //stop all motors, servos, etc.
+            stopDrive();
             terminateOpModeNow();   // Force exit of OpMode
         }
     }
@@ -234,10 +222,16 @@ public class ParentOpMode extends LinearOpMode {
     // Assign left and right drive speed using arguments/parameters rather than hardcoding
     // thumb stick values inside function body. This will allow tank drive to be reused for
     // autonomous programs without additional work
-    public void tankdrive(double left, double right){
-
+    public void tankDrive(double left, double right){
+        rightFront.setPower(right);
+        rightBack.setPower(right);
+        leftFront.setPower(left);
+        leftBack.setPower(left);
     }
 
+    public void stopDrive(){
+        tankDrive(0,0);
+    }
 
 
 
