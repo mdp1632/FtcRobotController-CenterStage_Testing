@@ -32,7 +32,9 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
@@ -68,6 +70,7 @@ public class ParentOpMode extends LinearOpMode {
     private DcMotor leftFront = null;
     private DcMotor leftBack = null;
 
+    private CRServo IntakeServo = null;
 
     //Other Global Variables
     //put global variables here...
@@ -84,6 +87,8 @@ public class ParentOpMode extends LinearOpMode {
         leftFront = hardwareMap.get(DcMotor.class, "lf_drive");
         leftBack = hardwareMap.get(DcMotor.class, "lb_drive");
 
+        IntakeServo = hardwareMap.get(CRServo.class, "InT_Servo");
+
 
         //Set motor run mode (if using SPARK Mini motor controllers)
 
@@ -93,6 +98,8 @@ public class ParentOpMode extends LinearOpMode {
         rightBack.setDirection(DcMotor.Direction.REVERSE);
         leftFront.setDirection(DcMotor.Direction.FORWARD);
         leftBack.setDirection(DcMotor.Direction.FORWARD);
+
+        IntakeServo.setDirection(CRServo.Direction.FORWARD);
 
         //Set range for special Servos
         //wobbleLift.scaleRange(0.15,.85); //Savox PWM range is between 0.8 and 2.2 ms. REV Hub puts out 0.5-2.5ms.
@@ -170,6 +177,11 @@ public class ParentOpMode extends LinearOpMode {
 
 
     // Buttons
+
+    public boolean Intake_button() { return gamepad1.y; }
+    public boolean Intake_Reverse() { return gamepad1.a; }
+
+
     public boolean emergencyButtons(){
         // check for combination of buttons to be pressed before returning true
        if(gamepad1.b == true && gamepad1.y == true){
@@ -237,6 +249,21 @@ public class ParentOpMode extends LinearOpMode {
 
     /*****************************/
     //More Methods (Functions)
+
+    public void RunIntake(){
+        if(Intake_button() == true) {
+            IntakeServo.setPower(.75);
+        }
+
+        if(Intake_Reverse() == true) {
+            IntakeServo.setPower(-.75);
+        }
+        else{
+            IntakeServo.setPower(0);
+        }
+
+    }
+
 
 
 

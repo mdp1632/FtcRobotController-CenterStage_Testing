@@ -82,6 +82,7 @@ public class TankDriveOpMode extends ParentOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             tankDrive(left_sticky_y(),right_sticky_y());
+            RunIntake();
 
 
             checkEmergencyStop();
