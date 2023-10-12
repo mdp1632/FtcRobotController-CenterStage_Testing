@@ -29,13 +29,18 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+
 
 /**
  * Original FTC opmode header block
@@ -70,7 +75,18 @@ public class ParentOpMode extends LinearOpMode {
     private DcMotor leftFront = null;
     private DcMotor leftBack = null;
 
+    private CRServo LiftServo = null;
+
     private CRServo IntakeServo = null;
+
+    private CRServo PushyServo = null;
+
+    BNO055IMU imu;
+    Orientation angles = new Orientation();
+
+
+
+
 
     //Other Global Variables
     //put global variables here...
@@ -87,7 +103,12 @@ public class ParentOpMode extends LinearOpMode {
         leftFront = hardwareMap.get(DcMotor.class, "lf_drive");
         leftBack = hardwareMap.get(DcMotor.class, "lb_drive");
 
+        LiftServo = hardwareMap.get(CRServo.class, "lift");
+
         IntakeServo = hardwareMap.get(CRServo.class, "InT_Servo");
+
+        PushyServo = hardwareMap.get(CRServo.class, "push_servo");
+
 
 
         //Set motor run mode (if using SPARK Mini motor controllers)
@@ -99,7 +120,11 @@ public class ParentOpMode extends LinearOpMode {
         leftFront.setDirection(DcMotor.Direction.FORWARD);
         leftBack.setDirection(DcMotor.Direction.FORWARD);
 
+        LiftServo.setDirection(DcMotorSimple.Direction.FORWARD);
+
         IntakeServo.setDirection(CRServo.Direction.FORWARD);
+
+        PushyServo.setDirection(DcMotor.Direction.FORWARD);
 
         //Set range for special Servos
         //wobbleLift.scaleRange(0.15,.85); //Savox PWM range is between 0.8 and 2.2 ms. REV Hub puts out 0.5-2.5ms.
@@ -110,11 +135,17 @@ public class ParentOpMode extends LinearOpMode {
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-
+        gyroInitialize();
 
         //Update Driver Station Status Message after init
         telemetry.addData("Status:", "Initialized");
         telemetry.update();
+    }
+
+    private void gyroInitialize() {
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+
+        parameters.mode = BNO055IMU.SensorMode.IMU; // test gyro mode
     }
 
 
@@ -181,6 +212,11 @@ public class ParentOpMode extends LinearOpMode {
     public boolean Intake_button() { return gamepad1.y; }
     public boolean Intake_Reverse() { return gamepad1.a; }
 
+    public boolean Lift_Up() { return gamepad1.right_bumper; }
+    public boolean Lift_Down() { if (gamepad1.right_trigger >= .5){return true;} else{return false;}}
+
+    public boolean Push_Out() { return gamepad1.left_bumper;}
+    public boolean Push_Back() {  if (gamepad1.left_trigger >= .5){return true;} else{return false;}}
 
     public boolean emergencyButtons(){
         // check for combination of buttons to be pressed before returning true
@@ -250,6 +286,19 @@ public class ParentOpMode extends LinearOpMode {
     /*****************************/
     //More Methods (Functions)
 
+
+    public void Run_Lift() {
+        if(Lift_Up() == true) {
+            LiftServo.setPower(.75);
+        }
+        if (Lift_Down() == true) {
+            LiftServo.setPower(-.75);
+        }
+        else{
+            LiftServo.setPower(0);
+        }
+
+    }
     public void RunIntake(){
         if(Intake_button() == true) {
             IntakeServo.setPower(.75);
@@ -262,6 +311,15 @@ public class ParentOpMode extends LinearOpMode {
             IntakeServo.setPower(0);
         }
 
+    }
+
+    public void PushPush(){
+        if(Push_Out() == true) {
+            PushyServo.setPower(.75);
+        }
+        if (Push_Back() == true) {
+            PushyServo.setPower(-.75);
+        }
     }
 
 
