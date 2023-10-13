@@ -213,10 +213,22 @@ public class ParentOpMode extends LinearOpMode {
     public boolean Intake_Reverse() { return gamepad1.a; }
 
     public boolean Lift_Up() { return gamepad1.right_bumper; }
-    public boolean Lift_Down() { if (gamepad1.right_trigger >= .5){return true;} else{return false;}}
+    public boolean Lift_Down() {
+        if (gamepad1.right_trigger >= .5) {
+            return true;}
+        else{
+            return false;
+        }
+    }
 
     public boolean Push_Out() { return gamepad1.left_bumper;}
-    public boolean Push_Back() {  if (gamepad1.left_trigger >= .5){return true;} else{return false;}}
+    public boolean Push_Back() {
+        if (gamepad1.left_trigger >= .5){
+            return true;
+        } else{
+            return false;
+        }
+    }
 
     public boolean emergencyButtons(){
         // check for combination of buttons to be pressed before returning true
@@ -299,6 +311,7 @@ public class ParentOpMode extends LinearOpMode {
         }
 
     }
+
     public void RunIntake(){
         if(Intake_button() == true) {
             IntakeServo.setPower(.75);
@@ -340,5 +353,22 @@ public class ParentOpMode extends LinearOpMode {
     //Gyro Functions
 
 
+    //TODO:
+    //  Consider adding additional state to PushyPush (Out, Middle, Back) to allow pixels to be pushed out one at a time.
+    //      Also, PushyServo will not be continuous rotation. It will most likely need 3 discreet positions (see previous line).
+    //  Telemetry - Add telemetry to functions to show motor speeds, servo positions, etc.
+    //  Holonomic Drive - Robot-Centric
+    //  Holonomic Drive - Field-Centric
+    //  Helper Class - Create Gyro Heading Offset Holder Class
+    //  Helper Class - Create ToggleButton Class
+    //  Incorporate sensor(s) for lift (encoder, limit switch, string potentiometer) to allow set heights/positions
+    //  Odometry? - Discuss with team. Would this be helpful?
 
+    //TODO: AUTONOMOUS
+    //  Holonomic Auto Drive function (time-based)
+    //  Auto Rotate function (using gyro)
+
+    //TODO: (Maybe, Hopefully) - Advanced
+    //  Computer Vision - AprilTags
+    //  Computer Vision/ML/TensorFlow - Object Detection (Team Prop)
 }
