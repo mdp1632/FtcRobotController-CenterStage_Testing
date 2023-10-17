@@ -34,12 +34,17 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+
 
 
 /**
@@ -79,7 +84,7 @@ public class ParentOpMode extends LinearOpMode {
 
     private CRServo IntakeServo = null;
 
-    private CRServo PushyServo = null;
+    private Servo PushyServo = null;
 
     BNO055IMU imu;
     Orientation angles = new Orientation();
@@ -107,7 +112,7 @@ public class ParentOpMode extends LinearOpMode {
 
         IntakeServo = hardwareMap.get(CRServo.class, "InT_Servo");
 
-        PushyServo = hardwareMap.get(CRServo.class, "push_servo");
+        PushyServo = hardwareMap.get(Servo.class, "push_servo");
 
 
 
@@ -124,7 +129,7 @@ public class ParentOpMode extends LinearOpMode {
 
         IntakeServo.setDirection(CRServo.Direction.FORWARD);
 
-        PushyServo.setDirection(DcMotor.Direction.FORWARD);
+        PushyServo.setDirection(Servo.Direction.FORWARD);
 
         //Set range for special Servos
         //wobbleLift.scaleRange(0.15,.85); //Savox PWM range is between 0.8 and 2.2 ms. REV Hub puts out 0.5-2.5ms.
@@ -142,11 +147,6 @@ public class ParentOpMode extends LinearOpMode {
         telemetry.update();
     }
 
-    private void gyroInitialize() {
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-
-        parameters.mode = BNO055IMU.SensorMode.IMU; // test gyro mode
-    }
 
 
     /**
@@ -228,7 +228,10 @@ public class ParentOpMode extends LinearOpMode {
         } else{
             return false;
         }
+
     }
+    public boolean Push_Mid() { return gamepad1.dpad_up;}
+
 
     public boolean emergencyButtons(){
         // check for combination of buttons to be pressed before returning true
@@ -287,6 +290,11 @@ public class ParentOpMode extends LinearOpMode {
         rightBack.setPower(right);
         leftFront.setPower(left);
         leftBack.setPower(left);
+
+        telemetry.addData( "left power " , left);
+        telemetry.addData("right power " , right);
+
+
     }
 
     public void stopDrive(){
@@ -300,39 +308,55 @@ public class ParentOpMode extends LinearOpMode {
 
 
     public void Run_Lift() {
+        double liftPower = .75;
         if(Lift_Up() == true) {
-            LiftServo.setPower(.75);
+            LiftServo.setPower(liftPower);
         }
         if (Lift_Down() == true) {
-            LiftServo.setPower(-.75);
+            LiftServo.setPower(-liftPower);
         }
         else{
-            LiftServo.setPower(0);
+            liftPower = 0;
+            LiftServo.setPower(liftPower);
         }
+
+        telemetry.addData("lift power ", liftPower);
 
     }
 
     public void RunIntake(){
+        double intakePower = .75;
         if(Intake_button() == true) {
-            IntakeServo.setPower(.75);
+            IntakeServo.setPower(intakePower);
         }
 
         if(Intake_Reverse() == true) {
-            IntakeServo.setPower(-.75);
+            IntakeServo.setPower(-intakePower);
         }
-        else{
-            IntakeServo.setPower(0);
+        else{ intakePower = 0;
+            IntakeServo.setPower(intakePower);
         }
+
+        telemetry.addData("intake power ", intakePower);
 
     }
 
     public void PushPush(){
+
+        String pushyposition = "?";
         if(Push_Out() == true) {
-            PushyServo.setPower(.75);
+            pushyposition = "OUT";
+            PushyServo.setPosition(.75);
         }
         if (Push_Back() == true) {
-            PushyServo.setPower(-.75);
+            pushyposition = "IN";
+            PushyServo.setPosition(-.75);
         }
+        if(Push_Mid() == true) {
+            pushyposition = "MIDDLE";
+            PushyServo.setPosition(.45);
+        }
+        telemetry.addData("pushy placement ", pushyposition);
     }
 
 
@@ -351,7 +375,16 @@ public class ParentOpMode extends LinearOpMode {
 
     /*****************************/
     //Gyro Functions
+    private void gyroInitialize() {
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
 
+        parameters.mode = BNO055IMU.SensorMode.IMU; // test gyro mode+
+    }
+    public double gyroAngle() {
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC,AxesOrder.ZYX, AngleUnit.DEGREES);
+        return angles.firstAngle;
+
+    }
 
     //TODO:
     //  Consider adding additional state to PushyPush (Out, Middle, Back) to allow pixels to be pushed out one at a time.
