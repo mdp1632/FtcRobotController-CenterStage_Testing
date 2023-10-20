@@ -81,21 +81,16 @@ public class ParentOpMode extends LinearOpMode {
     private DcMotor leftBack = null;
 
     private CRServo LiftServo = null;
-
     private CRServo IntakeServo = null;
-
     private Servo PushyServo = null;
 
     BNO055IMU imu;
     Orientation angles = new Orientation();
 
 
-
-
-
     //Other Global Variables
     //put global variables here...
-    //
+    public double ServoPosition = 0;
     //
     //
 
@@ -342,24 +337,37 @@ public class ParentOpMode extends LinearOpMode {
     }
 
     public void PushPush(){
-
+        double OUT = .68;
+        double MIDDLE = .57;
+        double IN = .33;
         String pushyposition = "?";
         if(Push_Out() == true) {
             pushyposition = "OUT";
-            PushyServo.setPosition(.75);
+            PushyServo.setPosition(OUT);
         }
         if (Push_Back() == true) {
             pushyposition = "IN";
-            PushyServo.setPosition(-.75);
+            PushyServo.setPosition(IN);
         }
         if(Push_Mid() == true) {
             pushyposition = "MIDDLE";
-            PushyServo.setPosition(.45);
+            PushyServo.setPosition(MIDDLE);
         }
         telemetry.addData("pushy placement ", pushyposition);
     }
 
 
+    public void servoTestTest(){
+        if (gamepad1.dpad_up){
+            ServoPosition += .001;
+        }
+        if (gamepad1.dpad_down){
+            ServoPosition -= .001;
+        }
+        PushyServo.setPosition(ServoPosition);
+
+        telemetry.addData("Push placement ", ServoPosition);
+    }
 
 
     /*****************************/
@@ -379,9 +387,19 @@ public class ParentOpMode extends LinearOpMode {
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
 
         parameters.mode = BNO055IMU.SensorMode.IMU; // test gyro mode+
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.loggingEnabled = false;
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+
+        while (!imu.isGyroCalibrated() && !isStopRequested()){
+            sleep(500);
+            idle();
+        }
     }
     public double gyroAngle() {
-        angles = imu.getAngularOrientation(AxesReference.INTRINSIC,AxesOrder.ZYX, AngleUnit.DEGREES);
+        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC,AxesOrder.ZYX, AngleUnit.DEGREES);
         return angles.firstAngle;
 
     }

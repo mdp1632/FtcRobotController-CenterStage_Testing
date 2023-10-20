@@ -6,8 +6,8 @@ Motor Ports                    Configuration Names
 
 Servo Ports
     0   InT_Servo
-    1
-    2
+    1   lift
+    2   push_servo
     3
     4
     5
