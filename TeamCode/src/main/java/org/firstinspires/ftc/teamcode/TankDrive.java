@@ -86,7 +86,7 @@ public class TankDrive extends ParentOpMode {
             tankDrive(left_sticky_y(),right_sticky_y());
             RunIntake();
             PushPush();
-//            telemetry.addData("angle ", gyroAngle());
+            telemetry.addData("angle ", gyroAngle());
 
 
             checkEmergencyStop();

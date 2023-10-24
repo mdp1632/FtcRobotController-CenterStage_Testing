@@ -292,6 +292,11 @@ public class ParentOpMode extends LinearOpMode {
 
     }
 
+    public void Holonomic_drive (){
+        double DriveAngle = Math.atan2(left_sticky_y(), left_sticky_x());
+        double magnitude = Math.hypot(left_sticky_x(), left_sticky_y());
+    }
+
     public void stopDrive(){
         tankDrive(0,0);
     }
@@ -400,13 +405,12 @@ public class ParentOpMode extends LinearOpMode {
     }
     public double gyroAngle() {
         Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC,AxesOrder.ZYX, AngleUnit.DEGREES);
-        return angles.firstAngle;
+        double heading = angles.firstAngle;
+        return heading;
 
     }
 
     //TODO:
-    //  Consider adding additional state to PushyPush (Out, Middle, Back) to allow pixels to be pushed out one at a time.
-    //      Also, PushyServo will not be continuous rotation. It will most likely need 3 discreet positions (see previous line).
     //  Telemetry - Add telemetry to functions to show motor speeds, servo positions, etc.
     //  Holonomic Drive - Robot-Centric
     //  Holonomic Drive - Field-Centric
