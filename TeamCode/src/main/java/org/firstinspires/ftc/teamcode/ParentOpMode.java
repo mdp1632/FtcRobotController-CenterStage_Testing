@@ -29,11 +29,14 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BHI260IMU;
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -84,6 +87,7 @@ public class ParentOpMode extends LinearOpMode {
     private CRServo IntakeServo = null;
     private Servo PushyServo = null;
 
+    BHI260IMU Imu;
     BNO055IMU imu;
     Orientation angles = new Orientation();
 
@@ -293,8 +297,21 @@ public class ParentOpMode extends LinearOpMode {
     }
 
     public void Holonomic_drive (){
+        double Rotation = -right_sticky_x();
+
         double DriveAngle = Math.atan2(left_sticky_y(), left_sticky_x());
         double magnitude = Math.hypot(left_sticky_x(), left_sticky_y());
+
+        double leftFrontWheel = magnitude*Math.cos(DriveAngle + (Math.PI/4) + (Rotation));
+        double rightFrontWheel = magnitude*Math.sin(DriveAngle + (Math.PI/4) - Rotation);
+        double leftBackWheel = magnitude*Math.sin(DriveAngle + (Math.PI/4) + (Rotation));
+        double rightBackWheel = magnitude*Math.cos(DriveAngle + (Math.PI/4) - Rotation);
+
+        leftFront.setPower(leftFrontWheel);
+        leftBack.setPower(leftBackWheel);
+        rightFront.setPower(rightFrontWheel);
+        rightBack.setPower(rightBackWheel);
+
     }
 
     public void stopDrive(){
@@ -389,7 +406,11 @@ public class ParentOpMode extends LinearOpMode {
     /*****************************/
     //Gyro Functions
     private void gyroInitialize() {
+
+
+
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+
 
         parameters.mode = BNO055IMU.SensorMode.IMU; // test gyro mode+
         parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
@@ -402,7 +423,11 @@ public class ParentOpMode extends LinearOpMode {
             sleep(500);
             idle();
         }
+
+
     }
+
+
     public double gyroAngle() {
         Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC,AxesOrder.ZYX, AngleUnit.DEGREES);
         double heading = angles.firstAngle;
